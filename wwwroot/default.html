@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <!--<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />-->
+    <link rel="stylesheet" href="https://unpkg.com/vue-select@3.0.0/dist/vue-select.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+
+</head>
+
+<body>
+
+    <div id="app" class="container mt-5">
+        <!-- <div class="row"> -->
+        <h2>User List</h2>
+       
+        <div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUser" v-tooltip="'Add new user'"><i class="fa-solid fa-add"></i></button>
+            </div>
+            <table class="table mt-3">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Hobby</th>
+                        <th scope="col">Skillsets</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(user, idx) in users" :key="user.id">
+                        <td> {{idx + 1 }}</td>
+                        <td> {{ user.username }}</td>
+                        <td> {{ user.mail }}</td>
+                        <td> {{ user.hobby }}</td>
+                        <td> {{ user.skillsets.map(item => item.value).join(', ')}}</td>
+                        <td>
+                            <div class="d-flex align-items-center" style="gap: 5px;">
+                                <button class="btn btn-info" @click="updateUser(user)" data-bs-toggle="modal" data-bs-target="#addUser"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger" @click="deleteUser(user.id)"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="addUser" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUserLabel">Add User</h5>
+                        <i class="fa-solid fa-x" data-bs-dismiss="modal" style="cursor: pointer"></i>
+                    </div>
+                    <form @submit.prevent="addUpdateUser">
+                        <div class="modal-body d-flex flex-column" style="gap: 20px;">
+                            <div class="form-group">
+                                <label>Enter Username :</label>
+                                <input type="text" v-model="newUser.username" class="form-control mt-1" placeholder="Username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Enter Email :</label>
+                                <input type="email" v-model="newUser.mail" class="form-control mt-1" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Enter Hobby :</label>
+                                <input type="text" v-model="newUser.hobby" class="form-control mt-1" placeholder="Hobby">
+                            </div>
+                            <div class="form-group">
+                                <label>Select Skillset(s) :</label>
+                                <v-select v-model="newUser.skillsets"
+                                          :options="options"
+                                          multiple
+                                          label="name" class="mt-1"></v-select>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="resetForm()">Close</button>
+                            <button type="submit" class="btn btn-primary">{{ isUpdate ? 'Update' : 'Add' }} User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/vue@2"></script>
+    <script src="https://unpkg.com/vue-select@latest"></script>
+    <script src="https://unpkg.com/v-tooltip@^2.0.0"></script>
+    <!-- Axios CDN for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        Vue.component('v-select', VueSelect.VueSelect)
+        Vue.directive('tooltip', VTooltip.VTooltip)
+
+        new Vue({
+            el: '#app',
+            data: {
+                options: [
+                    { name: 'Communication', value: 'Communication' },
+                    { name: 'Technical', value: 'Technical' },
+                    { name: 'Social', value: 'Social' }
+                ],
+                users: [],
+                userEmpty: {
+                    username: '',
+                    mail: '',
+                    hobby: '',
+                    skillsets: [],
+                },
+                newUser: {
+                    username: '',
+                    mail: '',
+                    hobby: '',
+                    skillsets: [],
+                },
+                isUpdate: false,
+            },
+            mounted() {
+                this.getUsers();
+            },
+            methods: {
+                updateUser(user) {
+                    this.newUser = user;
+                    this.isUpdate = true;
+                },
+                resetForm() {
+                    this.newUser = this.userEmpty;
+                },
+                getUsers() {
+                    axios.get('http://localhost:5270/api/User')
+                        .then(response => {
+                            const data = response.data;
+                            this.users = data.map(item => ({
+                                ...item,
+                                skillsets: item.skillsets.split(',').map(item => item.trim()).map(value => ({ name: value, value: value }))
+                            }))
+                            console.log('>> users',  this.users)
+
+                        })
+                        .catch(error => {
+                            console.error('Error fetching users:', error);
+                        });
+                },
+                addUpdateUser() {
+                    this.newUser.skillsets = this.newUser.skillsets.map(item => item.value).join(', ')
+
+                    if (this.isUpdate) {
+                        axios.put(`http://localhost:5270/api/User/${this.newUser.id}`, this.newUser)
+                            .then(response => {
+                                this.getUsers();
+                                this.newUser = this.userEmpty;
+                            })
+                            .catch(error => {
+                                console.error('Error adding user:', error);
+                            });
+                    } else {
+                        axios.post('http://localhost:5270/api/User', this.newUser)
+                            .then(response => {
+                                this.getUsers();
+                                this.newUser = this.userEmpty;
+                            })
+                            .catch(error => {
+                                console.error('Error adding user:', error);
+                            });
+                    }
+
+                },
+                deleteUser(userId) {
+                    axios.delete(`http://localhost:5270/api/User/${userId}`)
+                        .then(response => {
+                            this.getUsers();
+                        })
+                        .catch(error => {
+                            console.error('Error deleting user:', error);
+                        });
+                }
+            }
+        });</script>
+
+</body>
+
+</html>
