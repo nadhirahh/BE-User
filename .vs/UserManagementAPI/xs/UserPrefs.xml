@@ -1,4 +1,37 @@
-﻿<Properties StartupConfiguration="{3410B1F3-956F-403D-9608-CAC6FE05AACE}|https">
+﻿<Properties StartupConfiguration="{3410B1F3-956F-403D-9608-CAC6FE05AACE}|http">
   <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Models/User.cs">
+    <Files>
+      <File FileName="appsettings.json" Line="1" Column="1" />
+      <File FileName="Properties/launchSettings.json" Line="14" Column="29" />
+      <File FileName="Controllers/UserController.cs" Line="31" Column="14" />
+      <File FileName="Models/User.cs" Line="10" Column="45" />
+      <File FileName="Program.cs" Line="16" Column="56" />
+      <File FileName="wwwroot/default.html" Line="73" Column="61" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="UserManagementAPI" expanded="True">
+            <Node name="UserManagementAPI">
+              <Node name="Controllers" expanded="True" />
+              <Node name="Data" expanded="True" />
+              <Node name="Models" expanded="True">
+                <Node name="User.cs" selected="True" />
+              </Node>
+              <Node name="Properties" expanded="True" />
+              <Node name="wwwroot" expanded="True" />
+              <Node name="appsettings.json" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.UserManagementAPI PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
 </Properties>

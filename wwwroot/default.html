@@ -22,7 +22,7 @@
        
         <div>
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUser" v-tooltip="'Add new user'"><i class="fa-solid fa-add"></i></button>
+                <button type="button" class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#addUser"><i class="fa-solid fa-add"></i></button>
             </div>
             <table class="table mt-3">
                 <thead class="thead-dark">
@@ -41,7 +41,7 @@
                         <td> {{ user.username }}</td>
                         <td> {{ user.mail }}</td>
                         <td> {{ user.hobby }}</td>
-                        <td> {{ user.skillsets.map(item => item.value).join(', ')}}</td>
+                        <td> {{ getSkillsets(user) }}</td>
                         <td>
                             <div class="d-flex align-items-center" style="gap: 5px;">
                                 <button class="btn btn-info" @click="updateUser(user)" data-bs-toggle="modal" data-bs-target="#addUser"><i class="fa-solid fa-pen"></i></button>
@@ -83,8 +83,8 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="resetForm()">Close</button>
-                            <button type="submit" class="btn btn-primary">{{ isUpdate ? 'Update' : 'Add' }} User</button>
+                            <button type="button" class="btn btn-secondary" @click="resetForm()" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">{{ isUpdate ? 'Update' : 'Add' }} User</button>
                         </div>
                     </form>
                 </div>
@@ -110,6 +110,7 @@
         new Vue({
             el: '#app',
             data: {
+                showModal: false,
                 options: [
                     { name: 'Communication', value: 'Communication' },
                     { name: 'Technical', value: 'Technical' },
@@ -134,6 +135,9 @@
                 this.getUsers();
             },
             methods: {
+                getSkillsets(user) {
+                    return user.skillsets.map(item => item.value).join(',')
+                },
                 updateUser(user) {
                     this.newUser = user;
                     this.isUpdate = true;
@@ -162,8 +166,8 @@
                     if (this.isUpdate) {
                         axios.put(`http://localhost:5270/api/User/${this.newUser.id}`, this.newUser)
                             .then(response => {
+                                this.newUser = this.userEmpty
                                 this.getUsers();
-                                this.newUser = this.userEmpty;
                             })
                             .catch(error => {
                                 console.error('Error adding user:', error);
@@ -171,13 +175,14 @@
                     } else {
                         axios.post('http://localhost:5270/api/User', this.newUser)
                             .then(response => {
+                                this.newUser = this.userEmpty
                                 this.getUsers();
-                                this.newUser = this.userEmpty;
                             })
                             .catch(error => {
                                 console.error('Error adding user:', error);
                             });
                     }
+                    
 
                 },
                 deleteUser(userId) {

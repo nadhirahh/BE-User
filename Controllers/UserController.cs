@@ -34,25 +34,25 @@ namespace UserManagementAPI.Controllers
         }
 
         // GET: api/user/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            try
-            {
-                var user = await _context.Users.FindAsync(id);
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<User>> GetUser(int id)
+        // {
+        //     try
+        //     {
+        //         var user = await _context.Users.FindAsync(id);
 
-                if (user == null)
-                {
-                    return NotFound(new { error = "User not found", message = $"User with ID {id} not found" });
-                }
+        //         if (user == null)
+        //         {
+        //             return NotFound(new { error = "User not found", message = $"User with ID {id} not found" });
+        //         }
 
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = "Internal server error", message = ex.Message });
-            }
-        }
+        //         return Ok(user);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, new { error = "Internal server error", message = ex.Message });
+        //     }
+        // }
 
         // POST: api/user
         [HttpPost]
@@ -140,9 +140,9 @@ namespace UserManagementAPI.Controllers
             }
         }
 
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }
+        // private bool UserExists(int id)
+        // {
+        //     return _context.Users.Any(e => e.Id == id);
+        // }
     }
 }
